@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# dotglob: to include hidden files and directories
+# globskipdots: to skip . and ..
+# globstar: to enable ** to match directories and subdirectories
+shopt -s globstar dotglob globskipdots
+
+# set -x is used for debugging, uncomment to see verbose output
+# set -x
+
+BASEDIR=$(dirname $0)
+
+_restore() {
+  local relative_file
+  local target_file
+  local archive_file
+
+  # ignore directories
+  if [ -d "$1" ]; then
+    return
+  fi
+
+  relative_file="$(realpath --relative-to="$BASEDIR/../dotfiles" "$1")"
+  target_file="$HOME/$relative_file"
+  archive_file="$HOME/.dotfiles_archive/$relative_file"
+
+  # if $target_file already exists and is a symbolic link, remove it
+  if [ -L "$target_file" ]; then
+    printf "Unlinking: %s\n" "$target_file"
+    unlink "$target_file"
+  fi
+
+  if ! [ -e "$target_file" ] && [ -e "$archive_file" ]; then
+    printf "Restoring: %s to %s\n" "$archive_file" "$target_file"
+    mkdir -p "$(dirname "$target_file")"
+    mv "$archive_file" "$target_file"
+  fi
+}
+
+for f in $BASEDIR/../dotfiles/**/*; do
+  _restore "$f"
+done
+
+unset -f _restore

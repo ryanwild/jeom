@@ -1,0 +1,17 @@
+#!/bin/bash
+
+_track() {
+  local target_file
+  local target_directory
+
+  target_file="./dotfiles/$(realpath --relative-to="$HOME" "$1")"
+  target_directory="$(dirname "$target_file")"
+
+  printf "Tracking from: %s to: %s" "$1" "$target_file"
+  mkdir -p "$target_directory"
+  cp -R "$1" --target-directory="$target_directory"
+}
+
+_track "$@"
+
+unset -f _track

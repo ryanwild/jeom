@@ -1,0 +1,13 @@
+#!/bin/bash
+
+docker build --file "$(pwd)/tests/install_dotfiles/Dockerfile" --tag dotfiles:install_dotfiles . && \
+docker run -it --rm dotfiles:install_dotfiles && \
+docker rmi dotfiles:install_dotfiles
+
+docker build --file "$(pwd)/tests/restore_dotfiles/Dockerfile" --tag dotfiles:restore_dotfiles . && \
+docker run -it --rm dotfiles:restore_dotfiles && \
+docker rmi dotfiles:restore_dotfiles
+
+docker build --file "$(pwd)/tests/install_deps/Dockerfile" --tag dotfiles:install_deps . && \
+docker run -it --rm dotfiles:install_deps && \
+docker rmi dotfiles:install_deps
